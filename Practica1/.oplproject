@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="ASCII"?><project>
 	<version>1.0</version>
 	<configs>
-		<config default="true" name="MyConfig" category="opl">
-			<ref type="model" name="P1.mod">
+		<config category="opl" default="true" name="MyConfig">
+			<ref name="P1.mod" type="model">
 			</ref>
-			<ref type="data" name="P1.dat">
+			<ref name="P1.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="MainConfiguration">
+			<ref name="main.mod" type="model">
 			</ref>
 		</config>
 	</configs>
