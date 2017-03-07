@@ -5,6 +5,7 @@
  *********************************************/
 int nTasks=...;
 int nCPUs=...;
+int K=...;
 range T=1..nTasks;
 range C=1..nCPUs;
 float rt[t in T]=...;
@@ -14,9 +15,12 @@ dvar float z;
 
 minimize z;
 subject to {
-	// each task is assigned to exactly one CPU
+	// each task is assigned to at most one CPU
 	forall(t in T)
-		sum(c in C) x_tc[t,c] == 1;
+		sum(c in C) x_tc[t,c] <= 1;
+	// we have at least T-K assigned tasks
+	// (i.e: we have rejected at most K tasks)
+    sum(t in T, c in C) x_tc[t,c] >= nTasks-K;
 	// no CPU capacity is exceeded
 	forall(c in C)
 		sum(t in T) rt[t]*x_tc[t, c] <= rc[c];
