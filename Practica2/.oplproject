@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="ASCII"?><project>
 	<version>1.0</version>
 	<configs>
-		<config default="true" name="MyCFG" category="opl">
+		<config default="false" name="CFG PROB 2B" category="opl">
+			<ref type="model" name="Practica2b.mod">
+			</ref>
+			<ref type="data" name="Practica2.dat">
+			</ref>
+		</config>
+		<config default="true" name="CFG PROB 2" category="opl">
 			<ref type="model" name="Practica2.mod">
 			</ref>
 			<ref type="data" name="Practica2.dat">
