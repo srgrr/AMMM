@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ASCII"?><project>
+	<version>1.0</version>
+	<configs>
+		<config category="opl" default="true" name="Exercise 1">
+			<ref name="E1.mod" type="model">
+			</ref>
+			<ref name="E1.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="Exercise 2">
+			<ref name="E2.mod" type="model">
+			</ref>
+			<ref name="E2.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="Exercise 3">
+			<ref name="E3.mod" type="model">
+			</ref>
+			<ref name="E3.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="Exercise 4">
+			<ref name="E4.mod" type="model">
+			</ref>
+			<ref name="E4.dat" type="data">
+			</ref>
+		</config>
+	</configs>
+	
+</project>

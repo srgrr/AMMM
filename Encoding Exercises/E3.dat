@@ -1,0 +1,9 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 8, 2017 at 6:57:12 PM
+ *********************************************/
+itemAmount=3;
+maximum_weight=10;
+value=[3 4 2];
+weight=[7 8 3];

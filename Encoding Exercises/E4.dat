@@ -1,0 +1,9 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 8, 2017 at 7:16:28 PM
+ *********************************************/
+universe_size=5;
+subset_count=4;
+subset_contains_element=[[1 1 1 0 0] [0 1 0 1 0] [0 0 1 1 0] [0 0 0 1 1]];
+ 
