@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="ASCII"?><project>
 	<version>1.0</version>
 	<configs>
-		<config default="false" name="CFG PROB 2B" category="opl">
-			<ref type="model" name="Practica2b.mod">
+		<config category="opl" default="false" name="CFG PROB 2B">
+			<ref name="Practica2b.mod" type="model">
 			</ref>
-			<ref type="data" name="Practica2.dat">
+			<ref name="Practica2.dat" type="data">
 			</ref>
 		</config>
-		<config default="true" name="CFG PROB 2" category="opl">
-			<ref type="model" name="Practica2.mod">
+		<config category="opl" default="true" name="CFG PROB 2">
+			<ref name="Practica2.mod" type="model">
 			</ref>
-			<ref type="data" name="Practica2.dat">
+			<ref name="Practica2.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="CFG PROB 1">
+			<ref name="Practica1.mod" type="model">
+			</ref>
+			<ref name="Practica2.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="CFG PROB2 ORIGINAL">
+			<ref name="Practica2original.mod" type="model">
+			</ref>
+			<ref name="Practica2.dat" type="data">
 			</ref>
 		</config>
 	</configs>
