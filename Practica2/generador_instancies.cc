@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   }
   srand(seed);
   cout << "nTasks=" << nTasks << ";" << endl;
-  cout << "nCpus=" << nCpus << ";" << endl;
+  cout << "nCPUs=" << nCpus << ";" << endl;
   cout << "K=" << K << ";" << endl;
   cout << "rt=[";
   for(int i=0; i<nTasks; ++i) {

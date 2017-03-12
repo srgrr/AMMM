@@ -16,8 +16,6 @@
 		<config category="opl" default="false" name="CFG PROB 1">
 			<ref name="Practica1.mod" type="model">
 			</ref>
-			<ref name="Practica2.dat" type="data">
-			</ref>
 		</config>
 		<config category="opl" default="false" name="CFG PROB2 ORIGINAL">
 			<ref name="Practica2original.mod" type="model">
