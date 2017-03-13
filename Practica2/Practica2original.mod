@@ -15,9 +15,9 @@ dvar float z;
 
 minimize z;
 subject to {
-	// each task is assigned to at most one CPU
+	// each task is assigned to at exactly one CPU
 	forall(t in T)
-		sum(c in C) x_tc[t,c] <= 1;
+		sum(c in C) x_tc[t,c] == 1;
 	// no CPU capacity is exceeded
 	forall(c in C)
 		sum(t in T) rt[t]*x_tc[t, c] <= rc[c];
