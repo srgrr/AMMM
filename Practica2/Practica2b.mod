@@ -5,10 +5,12 @@
  *********************************************/
 int nTasks=...;
 int nCPUs=...;
+
 range T=1..nTasks;
 range C=1..nCPUs;
 float rt[t in T]=...;
 float rc[c in C]=...;
+
 float K=...;
 dvar boolean x_tc[t in T, c in C];
 dvar boolean used[t in T];
