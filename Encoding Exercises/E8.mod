@@ -24,7 +24,7 @@ maximize (sum(g in G) profit_ratio * profit[g] * x[g]) + profit_ratio*g2_extra_p
 g7_penalty*xp;
 
 subject to {
-	sum(g in G) time[g]*x[g] + g2_extra_time*x2p <= 720;
+	sum(g in G) time[g]*x[g] + g2_extra_time*x2p <= time_limit;
 	forall(g in G) x[g] <= jobs[g];
 	x2p <= g2_job_limit;
 	
