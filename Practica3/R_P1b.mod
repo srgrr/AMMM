@@ -17,12 +17,15 @@ float rh[h in H]=...;
 float rc[c in C]=...;
 int TH[t in T, h in H] = ...;
 int CK[c in C, k in K] = ...;
+//task t in computer c
 dvar boolean x_tc[t in T, c in C];
+//thread h in core k
 dvar boolean x_hk[h in H, k in K];
-dvar float+ z;
+dvar int computerUsed[c in C];
+dvar int amountComputerUsed;
 
 // Objective
-minimize z;
+minimize amountComputerUsed;
 subject to{
 	// Constraint 1
 	forall(h in H)
@@ -38,6 +41,9 @@ subject to{
 	    sum(h in H) rh[h] * x_hk[h,k] <= rc[c];
 	// Constraint 4
 	forall(c in C)
-		z >= (1 / ((sum(k in K) CK[c,k])*rc[c])) * sum(h in H, k in K: CK[c,k] == 1) rh[h]*x_hk[h,k];
+	  forall(t in T)
+	  	computerUsed[c] >= x_tc[t,c]; 
+	// Constraint 5 
+	amountComputerUsed >= sum(c in C) computerUsed[c];
 }
  

@@ -5,6 +5,18 @@
 			<ref name="R_P1_main.mod" type="model">
 			</ref>
 		</config>
+		<config category="opl" default="false" name="R1_P1_NoMain">
+			<ref name="R_P1.mod" type="model">
+			</ref>
+			<ref name="R_P1.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="R1_P1b_NoMain">
+			<ref name="R_P1b.mod" type="model">
+			</ref>
+			<ref name="R_P1.dat" type="data">
+			</ref>
+		</config>
 	</configs>
 	
 </project>

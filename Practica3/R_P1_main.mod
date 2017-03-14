@@ -6,7 +6,7 @@
 
   main {
   
-	function printResult(model){
+	/*function printResult(model){
 		writeln("Max load " + cplex.getObjValue() + "%");	
 		for (var c=1;c<=model.nCPUs;c++) {
 			var load=0;
@@ -17,9 +17,9 @@
 			load = (1/model.rc[c])*load;
 			writeln("CPU " + c + " loaded at " + load + "%");
 		}
-	}
+	}*/
 	
-	function checkModel(model){
+	/*function checkModel(model){
 		var totalLoad=0;
 		for (var t=1;t<=model.nTasks;t++)
 			totalLoad += model.rt[t];
@@ -29,7 +29,7 @@
 			totalCapacity += model.rc[t];
 		writeln("Total available capacity: " + totalCapacity);
 		return (totalCapacity >= totalLoad);
-	}
+	}*/
 	
 	function endInstances(){
 		model.end();
@@ -46,7 +46,7 @@
 	var data = new IloOplDataSource("R_P1.dat");
 	model.addDataSource(data);
 	model.generate();
-	var validModel = checkModel(model);
+	//var validModel = checkModel(model);
 	cplex.epgap=0.01;
 	cplex.solve();
 	/*if (validModel && cplex.solve()) {
