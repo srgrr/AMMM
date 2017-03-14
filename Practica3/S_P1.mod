@@ -26,17 +26,18 @@ minimize z;
 subject to {
 	// each thread is assigned to exactly one core
 	forall(h in H)
-	  sum(k in K) x_hk[h, k] == 1;
-    // all threads from some task are assigned to the same CPU
-    forall(t in T, c in C)
-      sum(h in H : TH[t, h] == 1, k in K : CK[c, k] == 1) x_hk[h, k]
-      ==
-      (sum(h in H) TH[t, h])*x_tc[t, c];
-    // no core capacity is exceeded
-    forall(c in C, k in K : CK[c,k] == 1)
-      sum(h in H) rh[h]*x_hk[h, k] <= rc[c];
-    // z is greater or equal than any CPU load ratio
-    forall(c in C)
-      z >= 
-      (1 / (((sum(k in K) CK[c, k]))*rc[c])) * (sum(h in H, k in K : CK[c, k] == 1) rh[h]*x_hk[h,k]);
+		sum(k in K) x_hk[h, k] == 1;
+	// all threads from some task are assigned to the same CPU
+	forall(t in T, c in C)
+		sum(h in H : TH[t, h] == 1, k in K : CK[c, k] == 1) x_hk[h, k]
+		==
+		(sum(h in H) TH[t, h])*x_tc[t, c];
+	// no core capacity is exceeded
+	forall(c in C, k in K : CK[c,k] == 1)
+		sum(h in H) rh[h]*x_hk[h, k] <= rc[c];
+	// z is greater or equal than any CPU load ratio
+	forall(c in C)
+	z
+	>= 
+	(1 / (((sum(k in K) CK[c, k]))*rc[c])) * (sum(h in H, k in K : CK[c, k] == 1) rh[h]*x_hk[h,k]);
 }
