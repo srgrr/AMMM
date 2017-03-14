@@ -19,6 +19,9 @@ int TH[t in T][h in H]=...;
 dvar boolean x_tc[t in T][c in C];
 dvar boolean x_hk[h in H][k in K];
 
+
+// now z means "is computer c totally empty?"
+// see constraints to see how this value is enforced
 dvar boolean z[c in C];
 
 maximize sum(c in C) z[c];

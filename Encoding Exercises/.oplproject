@@ -28,7 +28,7 @@
 		<config category="opl" default="false" name="Exercise 5">
 			<ref name="E5.mod" type="model">
 			</ref>
-			<ref name="E5.dat" type="data">
+			<ref name="E5_cycles.dat" type="data">
 			</ref>
 		</config>
 	</configs>

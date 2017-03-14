@@ -17,6 +17,18 @@
 			<ref name="R_P1.dat" type="data">
 			</ref>
 		</config>
+		<config category="opl" default="false" name="S_P1">
+			<ref name="S_P1.mod" type="model">
+			</ref>
+			<ref name="R_P1.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="S_P1a">
+			<ref name="S_P1a.mod" type="model">
+			</ref>
+			<ref name="R_P1.dat" type="data">
+			</ref>
+		</config>
 	</configs>
 	
 </project>

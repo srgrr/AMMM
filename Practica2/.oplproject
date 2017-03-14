@@ -4,13 +4,13 @@
 		<config category="opl" default="false" name="CFG PROB 2B">
 			<ref name="Practica2b.mod" type="model">
 			</ref>
-			<ref name="Practica2.dat" type="data">
+			<ref name="big1.dat" type="data">
 			</ref>
 		</config>
 		<config category="opl" default="true" name="CFG PROB 2">
 			<ref name="Practica2.mod" type="model">
 			</ref>
-			<ref name="Practica2.dat" type="data">
+			<ref name="big3.dat" type="data">
 			</ref>
 		</config>
 		<config category="opl" default="false" name="CFG PROB 1">
@@ -19,8 +19,6 @@
 		</config>
 		<config category="opl" default="false" name="CFG PROB2 ORIGINAL">
 			<ref name="Practica2original.mod" type="model">
-			</ref>
-			<ref name="Practica2.dat" type="data">
 			</ref>
 		</config>
 	</configs>
