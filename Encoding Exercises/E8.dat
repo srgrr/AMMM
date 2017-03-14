@@ -1,0 +1,15 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 14, 2017 at 10:06:24 PM
+ *********************************************/
+numGroups = 7;
+profit = [100 340 350 190 550 100 1150];
+time = [1.0 5.0 3.7 2.4 4.5 0.7 9.5];
+jobs = [400 75 30 15 40 20 75];
+g7_penalty = 2000;
+profit_ratio = 0.1;
+g2_extra_time = 0.5;
+g2_extra_profit = 340.0;
+g2_job_limit = 50;
+time_limit=720.0;
