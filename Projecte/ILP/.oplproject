@@ -8,13 +8,11 @@
 		<config category="opl" default="false" name="sample">
 			<ref name="ilp_model.mod" type="model">
 			</ref>
+			<ref name="random.dat" type="data">
+			</ref>
 		</config>
 		<config category="opl" default="false" name="main">
 			<ref name="main.mod" type="model">
-			</ref>
-		</config>
-		<config category="opl" default="false" name="NumberEnigma">
-			<ref name="NumberEnigma.mod" type="model">
 			</ref>
 		</config>
 	</configs>

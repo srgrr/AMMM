@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include "solver.h"
 #include "bruteforce.h"
 #include "grasp.h"
@@ -6,6 +8,7 @@
 
 
 int main(int argc, char** argv) {
+  srand(time(NULL));
   if(argc<2) {
     std::cout << "Error, no algorithm specified!" << std::endl;
     std::exit(1);

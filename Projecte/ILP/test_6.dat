@@ -6,7 +6,8 @@
  
  /*
  	We have two cities and two locations in such a way that
- 	each city must 
+ 	each city must choose as primary center the center that
+ 	the other one has chosen as a secondary, and vice-versa
  */
  
 numCities = 2;
