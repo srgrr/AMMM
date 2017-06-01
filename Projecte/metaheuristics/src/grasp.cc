@@ -130,7 +130,9 @@ Solver::solution GRASP::get_randomized_solution() {
 }
 
 void GRASP::local_search(Solver::solution& current_solution) {
-
+  /*
+    Given a feasible solution
+  */
 }
 
 Solver::solution GRASP::solve() {
