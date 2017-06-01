@@ -4,6 +4,10 @@ Solver::Solver() {
 
 }
 
+double _dist(double x1, double y1, double x2, double y2) {
+  return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
 Solver::Solver(std::istream& in) {
   in >> num_cities >> num_types >> num_locations;
   city_coordinates =
@@ -46,10 +50,62 @@ Solver::Solver(std::istream& in) {
     in >> elem;
   }
 
+  std::vector< std::vector< double > > loc2loc_dist;
+  std::vector< std::vector< double > > city2loc_dist;
+
+  loc2loc_dist =
+    std::vector< std::vector< double > >(num_locations, std::vector< double >(num_locations, 0.0));
+
+  for(int i=0; i<num_locations; ++i) {
+    for(int j=0; j<i; ++j) {
+      loc2loc_dist[i][j] = loc2loc_dist[j][i] =
+        _dist(location_coordinates[i][0], location_coordinates[i][1],
+        location_coordinates[j][0], location_coordinates[j][1]);
+    }
+  }
+
+  city2loc_dist =
+    std::vector< std::vector< double > >(num_cities, std::vector< double >(num_locations, 0.0));
+
+  for(int i=0; i<num_cities; ++i) {
+    for(int j=0; j<num_locations; ++j) {
+      city2loc_dist[i][j] =
+        _dist(city_coordinates[i][0], city_coordinates[i][1],
+              location_coordinates[j][0], location_coordinates[j][1]);
+    }
+  }
+
 }
 
 bool Solver::is_solution_valid() {
+  return true;
+}
 
+void Solver::print_solution(const Solver::solution& sol) {
+    std::cout << "Solution cost: " << sol.solution_cost << std::endl;
+    std::cout << "Location center type:";
+    for(int i=0; i<int(sol.location_center_type.size()); ++i) {
+      if(i>0) std::cout << " ";
+      std::cout << sol.location_center_type[i];
+    }
+    std::cout << std::endl;
+    std::cout << "City primary center:";
+    for(int i=0; i<int(sol.city_primary_center.size()); ++i) {
+      if(i>0) std::cout << " ";
+      std::cout << sol.city_primary_center[i];
+    }
+    std::cout << std::endl;
+    std::cout << "City secondary center:";
+    for(int i=0; i<int(sol.city_secondary_center.size()); ++i) {
+      if(i>0) std::cout << " ";
+      std::cout << sol.city_secondary_center[i];
+    }
+    std::cout << std::endl;
+}
+
+Solver::solution Solver::solve() {
+  std::cout << "[ ERROR ]: You shall not call this method!!!" << std::endl;
+  std::exit(1);
 }
 
 void Solver::print_data_summary() {
