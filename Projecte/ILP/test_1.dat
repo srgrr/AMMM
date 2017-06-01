@@ -3,13 +3,13 @@
  * Author: sergiorg
  * Creation Date: Mar 19, 2017 at 10:24:06 AM
  *********************************************/
- 
+
  /*
  	This sample consists of a single city with three locations, and a single type
  	that ensures that two centers can be built to serve this city.
  	Also, d_center prevents to build centers in location pair (1,3)
  */
- 
+
 numCities = 1;
 
 numTypes = 1;
@@ -28,7 +28,7 @@ locationCoordinates = [
 
 cityPopulation = [10];
 
-d_center=6.0;
+d_center = 6.0;
 
 typeCapacity = [10];
 typeDistance = [1000];

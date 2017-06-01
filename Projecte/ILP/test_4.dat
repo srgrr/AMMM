@@ -3,13 +3,13 @@
  * Author: sergiorg
  * Creation Date: Mar 19, 2017 at 10:24:06 AM
  *********************************************/
- 
+
  /*
  	This sample has one city, two locations and two types.
  	One location can be set with type1 (which is cheaper),
  	and the other can only be set with type2 (which is expensive).
  */
- 
+
 numCities = 1;
 
 numTypes = 2;
@@ -27,8 +27,8 @@ locationCoordinates = [
 
 cityPopulation = [10];
 
-d_center=0.0;
+d_center = 0.0;
 
-typeCapacity = [10, 10];
-typeDistance = [2, 700];
-typeCost = [1, 2];
+typeCapacity = [10 10];
+typeDistance = [2 700];
+typeCost = [1 2];
