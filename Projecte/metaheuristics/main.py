@@ -39,8 +39,6 @@ def main():
 
     data_input = get_cpp_input(data)
 
-    print(data_input)
-
     cmd = ['./main', args.algorithm]
     pread, pwrite = os.pipe()
     os.write(pwrite, data_input.encode('utf-8'))

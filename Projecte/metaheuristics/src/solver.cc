@@ -74,7 +74,62 @@ Solver::Solver(std::istream& in) {
 
 }
 
-bool Solver::is_solution_valid() {
+bool Solver::is_solution_valid(Solver::solution& sol) {
+  /*
+    This function checks that a solution satisfies the constraints
+    specified on the PDFs equations
+  */
+
+  // equation 2 is always true given that we store Xlt as a vvdouble,
+  // in fact, it is not possible to violate it here
+
+  // check that each city has a primary and a secondary center
+  // equation 3 and 4
+  for(int i=0; i<num_cities; ++i) {
+    if(sol.city_primary_center[i] == -1) {
+      std::cout << "[ERROR]: City " << i << " has no primary center." << std::endl;
+    }
+    if(sol.city_secondary_center[i] == -1) {
+      std::cout << "[ERROR]. City " << i << " has no secondary center." << std::endl;
+    }
+  }
+
+  // equation 5
+  for(int i=0; i<num_cities; ++i) {
+    if(sol.city_primary_center[i] == sol.city_secondary_center[i]) {
+      std::cout << "[ERROR]: City " << i << " has " <<
+      sol.city_primary_center[i] << " as both primary and secondary center." <<
+      std::endl;
+      return false;
+    }
+  }
+
+  // equation 6
+  for(int i=0; i<num_cities; ++i) {
+    if(sol.city_primary_center[i] != -1 && sol.location_center_type[sol.city_primary_center[i]] == -1) {
+      std::cout << "[ERROR]: City " << i << " has " << sol.city_primary_center[i] <<
+      " as a primary center, but this location has no center" << std::endl;
+      return false;
+    }
+    if(sol.city_secondary_center[i] != -1 && sol.location_center_type[sol.city_secondary_center[i]] == -1) {
+      std::cout << "[ERROR]: City " << i << " has " << sol.city_secondary_center[i] <<
+      " as a primary center, but this location has no center" << std::endl;
+      return false;
+    }
+  }
+
+  // equation 7
+  for(int i=0; i<num_locations; ++i) {
+    for(int j=i+1; j<num_locations; ++j) {
+      if(sol.location_center_type[i] != -1 && sol.location_center_type[j] != -1 &&
+      loc2loc_dist[i][j] < d_center) {
+        std::cout << "[ERROR]: Locations " << i << " and " << j <<
+        " both have a center, but they are too near wrt d_center!" << std::endl;
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 

@@ -22,8 +22,8 @@ int main(int argc, char** argv) {
     std::cout << "Error, wrong algorithm name!" << std::endl;
     std::exit(2);
   }
-  solver->print_data_summary();
   Solver::solution sol = solver->solve();
+  solver->is_solution_valid(sol);
   std::cout << std::endl;
   solver->print_solution(sol);
 }

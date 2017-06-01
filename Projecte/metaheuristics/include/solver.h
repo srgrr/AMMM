@@ -23,7 +23,6 @@ public:
   Solver();
   Solver(std::istream& in);
 
-  bool is_solution_valid();
   void print_data_summary();
 
   // solution container
@@ -43,6 +42,7 @@ public:
       }
   };
 
+  bool is_solution_valid(Solver::solution& sol);
 
   virtual Solver::solution solve();
 
