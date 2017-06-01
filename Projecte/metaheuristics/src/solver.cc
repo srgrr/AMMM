@@ -130,6 +130,32 @@ bool Solver::is_solution_valid(Solver::solution& sol) {
     }
   }
 
+  // equation 8
+  std::vector< double > total_population(num_locations);
+  for(int i=0; i<num_cities; ++i) {
+    total_population[sol.city_primary_center[i]] += city_population[i];
+    total_population[sol.city_secondary_center[i]] += 0.1 * double(city_population[i]);
+  }
+  for(int i=0; i<num_locations; ++i) {
+    if(sol.location_center_type[i] == -1) continue;
+    if(total_population[i] > type_capacity[sol.location_center_type[i]]) {
+      std::cout << "[ERROR]: Location " << i << " has too many population assigned." << std::endl;
+      std::cout << "Assigned: " << total_population[i] << ", Capacity: " << type_capacity[sol.location_center_type[i]] << std::endl;
+      return false;
+    }
+  }
+
+  // equation 9
+  for(int i=0; i<num_cities; ++i) {
+    if(city2loc_dist[i][sol.city_primary_center[i]] > type_distance[sol.location_center_type[sol.city_primary_center[i]]]) {
+      std::cout << "[ERROR]: City " << i << " has assigned as primary center " << sol.city_primary_center[i] << ", which is too far" << std::endl;
+    }
+    if(city2loc_dist[i][sol.city_secondary_center[i]] > 3.0 * type_distance[sol.location_center_type[sol.city_secondary_center[i]]]) {
+      std::cout << "[ERROR]: City " << i << " has assigned as secondary center " << sol.city_secondary_center[i] << ", which is too far" << std::endl;
+    }
+
+  }
+
   return true;
 }
 

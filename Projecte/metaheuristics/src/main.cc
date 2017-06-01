@@ -23,7 +23,9 @@ int main(int argc, char** argv) {
     std::exit(2);
   }
   Solver::solution sol = solver->solve();
-  solver->is_solution_valid(sol);
+  if(sol.is_valid) {
+    solver->is_solution_valid(sol);
+  }
   std::cout << std::endl;
   solver->print_solution(sol);
 }
