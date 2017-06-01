@@ -16,9 +16,7 @@ Solver::solution GRASP::get_randomized_solution() {
       cost = sum of all minimum location prices
 
       minimum location price = the price of the cheapest location that can be
-      placed and still satisfy the problem's constraints
-
-
+      placed and still satisfy the problem constraints
     */
     for(int i=0; i<num_cities; ++i) {
       // cost < < primary_location, secondary_location >, < primary_type, secondary_type > >
@@ -39,23 +37,20 @@ Solver::solution GRASP::get_randomized_solution() {
           // is at distance < d_center from any of our two chosen centers
           int to_check[2] = {primary, secondary};
           bool can = true;
+          double current_cost = ret.solution_cost;
           for(int k=0; k<2 && can; ++k) {
             // is this location already assigned?
-            if(ret.location_center_type[to_check[k]] != -1) continue;
+            if(ret.location_center_type[to_check[k]] != -1) {
+              // lets pretend that our chosen centers have no type at the moment
+              current_cost -= type_cost[ret.location_center_type[to_check[k]]];
+              continue;
+            }
             for(int l=0; l<num_locations && can; ++l) {
               if(l == to_check[k]) continue;
               can &= (ret.location_center_type[l] == -1 || loc2loc_dist[l][to_check[k]] >= d_center);
             }
           }
           if(!can) continue;
-          // lets find the cheapests center types that satisfies the population requeriments
-          double current_cost = ret.solution_cost;
-          if(ret.location_center_type[primary] != -1) {
-            current_cost -= type_cost[ret.location_center_type[primary]];
-          }
-          if(ret.location_center_type[secondary] != -1) {
-            current_cost -= type_cost[ret.location_center_type[secondary]];
-          }
           // check if the primary location is suitable
           double population_primary =
             location_population[primary] + city_population[i];
@@ -63,17 +58,16 @@ Solver::solution GRASP::get_randomized_solution() {
             std::max(max_primary_dist[primary], city2loc_dist[i][primary]);
           double best_primary = -1.0;
           int best_primary_type = -1;
-          for(int t=0; t<num_types; ++t) {
-            if(type_capacity[t] >= population_primary && type_distance[t] >= cur_max_primary_dist) {
-              if(best_primary < 0.0 || type_cost[t] < best_primary) {
-                best_primary = type_cost[t];
-                best_primary_type = t;
-              }
-            }
-          }
-          if(best_primary < 0.0) continue;
 
-          // check if the secondary lcoation is suitable
+          /*
+            We must check if we can place a center such that is satisfies its
+            population demand and that the distances of its "client" cities
+            are inside the radii of the working distance.
+
+            The greedy part comes here: for the primary and the secondary center we will choose
+            the ones that minimize the cost. That is, we will choose the cheapest
+            center that allows us to satisfy the current constraints and demands
+          */
           double population_secondary =
             location_population[secondary] + 0.1*double(city_population[i]);
           double cur_max_secondary_dist =
@@ -81,6 +75,12 @@ Solver::solution GRASP::get_randomized_solution() {
           double best_secondary = -1.0;
           int best_secondary_type = -1;
           for(int t=0; t<num_types; ++t) {
+            if(type_capacity[t] >= population_primary && type_distance[t] >= cur_max_primary_dist) {
+              if(best_primary < 0.0 || type_cost[t] < best_primary) {
+                best_primary = type_cost[t];
+                best_primary_type = t;
+              }
+            }
             if(type_capacity[t] >= population_secondary && 3.0*type_distance[t] >= cur_max_secondary_dist) {
               if(best_secondary < 0.0 || type_cost[t] < best_secondary) {
                 best_secondary = type_cost[t];
@@ -88,7 +88,7 @@ Solver::solution GRASP::get_randomized_solution() {
               }
             }
           }
-          if(best_secondary < 0.0) continue;
+          if(best_primary < 0.0 || best_secondary < 0.0) continue;
           // did we find two center types suitable to our candidate?
           if(best_primary >= 0.0 && best_secondary >= 0.0) {
             current_cost += best_primary + best_secondary;
@@ -98,7 +98,11 @@ Solver::solution GRASP::get_randomized_solution() {
         // end of big inner loop
         }
       }
+      // if this list is empty then we cannot continue to construct the solution,
+      // lets return a solution marked as invalid
       if(candidate_list.empty()) return ret;
+      // candidate_list is a pair of double and pair of pairs of integers,
+      // so it will be sorted according to the double (which is the cost function)
       std::sort(candidate_list.begin(), candidate_list.end());
       int max_val = std::max(1, int(double(candidate_list.size()*alpha)));
       int chosen = rand()%max_val;
@@ -108,12 +112,14 @@ Solver::solution GRASP::get_randomized_solution() {
       int prim_type     = candidate_list[chosen].second.second.first;
       int secn_type     = candidate_list[chosen].second.second.second;
       // apply the chosen step to the solution
+      // update the solution structures and the cost
       ret.city_primary_center[i] = prim_location;
       ret.city_secondary_center[i] = secn_location;
       ret.location_center_type[prim_location] = prim_type;
       ret.location_center_type[secn_location] = secn_type;
       ret.solution_cost = new_cost;
-      // update the auxiliary data structures
+      // update the auxiliary data structures that let us check quickly if a
+      // candidate is valid or not
       location_population[prim_location] += city_population[i];
       location_population[secn_location] += 0.1 * double(city_population[i]);
       max_primary_dist[prim_location] = std::max(max_primary_dist[prim_location], city2loc_dist[i][prim_location]);
