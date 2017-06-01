@@ -29,6 +29,10 @@
 			<ref name="R_P1.dat" type="data">
 			</ref>
 		</config>
+		<config category="opl" default="false" name="RunAllExperiments">
+			<ref name="run_all_experiments.mod" type="model">
+			</ref>
+		</config>
 	</configs>
 	
 </project>

@@ -1,0 +1,35 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 19, 2017 at 10:24:06 AM
+ *********************************************/
+ 
+ /*
+ 	This sample consists of a single city with two locations, and a single type
+ 	that ensures that two centers can be built to serve this city.
+ 	A location is far enough to prevent it to be used as a primary center, but
+ 	near enough to be used as a secondary one
+ */
+ 
+numCities = 1;
+
+numTypes = 1;
+
+numLocations = 2;
+
+cityCoordinates = [
+[0.0 0.0]
+];
+
+locationCoordinates = [
+[1.0 0.0]
+[1.0 5.0]
+];
+
+cityPopulation = [10];
+
+d_center=0.0;
+
+typeCapacity = [10];
+typeDistance = [2];
+typeCost = [1];

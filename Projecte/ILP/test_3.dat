@@ -1,0 +1,33 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 19, 2017 at 10:24:06 AM
+ *********************************************/
+ 
+ /*
+ 	Same as sample_2, but it has no solution because the far location is
+ 	on "the fifth pine tree".
+ */
+ 
+numCities = 1;
+
+numTypes = 1;
+
+numLocations = 2;
+
+cityCoordinates = [
+[0.0 0.0]
+];
+
+locationCoordinates = [
+[1.0 0.0]
+[1.0 50.0]
+];
+
+cityPopulation = [10];
+
+d_center=0.0;
+
+typeCapacity = [10];
+typeDistance = [2];
+typeCost = [1];

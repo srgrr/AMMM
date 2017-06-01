@@ -1,0 +1,36 @@
+/*********************************************
+ * OPL 12.6.0.0 Data
+ * Author: sergiorg
+ * Creation Date: Mar 19, 2017 at 10:24:06 AM
+ *********************************************/
+ 
+ /*
+ 	We have two cities and four locations.
+ 	L - C - L - - - - - - - - L - C - L
+ */
+ 
+numCities = 2;
+
+numTypes = 1;
+
+numLocations = 4;
+
+cityCoordinates = [
+[3.0 0.0]
+[20.0 0.0]
+];
+
+locationCoordinates = [
+[0.0 0.0]
+[4.0 0.0]
+[17.0 0.0]
+[21.0 0.0]
+];
+
+cityPopulation = [10 10];
+
+d_center=0.0;
+
+typeCapacity = [10];
+typeDistance = [1];
+typeCost = [1];
