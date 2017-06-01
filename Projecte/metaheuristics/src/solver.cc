@@ -50,9 +50,6 @@ Solver::Solver(std::istream& in) {
     in >> elem;
   }
 
-  std::vector< std::vector< double > > loc2loc_dist;
-  std::vector< std::vector< double > > city2loc_dist;
-
   loc2loc_dist =
     std::vector< std::vector< double > >(num_locations, std::vector< double >(num_locations, 0.0));
 
@@ -82,20 +79,24 @@ bool Solver::is_solution_valid() {
 }
 
 void Solver::print_solution(const Solver::solution& sol) {
+    if(!sol.is_valid) {
+      std::cout << "No solution found" << std::endl;
+      return;
+    }
     std::cout << "Solution cost: " << sol.solution_cost << std::endl;
-    std::cout << "Location center type:";
+    std::cout << "Location center type: ";
     for(int i=0; i<int(sol.location_center_type.size()); ++i) {
       if(i>0) std::cout << " ";
       std::cout << sol.location_center_type[i];
     }
     std::cout << std::endl;
-    std::cout << "City primary center:";
+    std::cout << "City primary center: ";
     for(int i=0; i<int(sol.city_primary_center.size()); ++i) {
       if(i>0) std::cout << " ";
       std::cout << sol.city_primary_center[i];
     }
     std::cout << std::endl;
-    std::cout << "City secondary center:";
+    std::cout << "City secondary center: ";
     for(int i=0; i<int(sol.city_secondary_center.size()); ++i) {
       if(i>0) std::cout << " ";
       std::cout << sol.city_secondary_center[i];

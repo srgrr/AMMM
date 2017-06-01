@@ -21,5 +21,6 @@ int main(int argc, char** argv) {
   }
   solver->print_data_summary();
   Solver::solution sol = solver->solve();
+  std::cout << std::endl;
   solver->print_solution(sol);
 }

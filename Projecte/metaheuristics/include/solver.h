@@ -35,9 +35,9 @@ public:
       bool is_valid;
       double solution_cost;
       solution(int num_locs, int num_cities) {
-        location_center_type = std::vector< int >(num_locs);
-        city_primary_center = std::vector< int >(num_cities);
-        city_secondary_center = std::vector< int >(num_cities);
+        location_center_type = std::vector< int >(num_locs, -1);
+        city_primary_center = std::vector< int >(num_cities, -1);
+        city_secondary_center = std::vector< int >(num_cities, -1);
         is_valid = false;
         solution_cost = 0.0;
       }
