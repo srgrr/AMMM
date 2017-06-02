@@ -6,7 +6,7 @@
 
 class GRASP : public Solver {
 private:
-  int max_grasp_iterations = 10;
+  int max_grasp_iterations = 50;
   int max_solution_generation_attempts = 2;
   int beam_size = 10;
   double alpha = 0.25;

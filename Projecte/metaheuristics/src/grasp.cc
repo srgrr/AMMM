@@ -29,10 +29,12 @@ void GRASP::readjust_centers(Solver::solution& sol) {
     int best_center = 0;
     bool ok = false;
     for(int j=0; j<num_types; ++j) {
+      // check that the proposed type fulfills all the distance and population
+      // constraints
       if(type_distance[j] < max_primary_dist[i]) continue;
       if(3.0*type_distance[j] < max_secondary_dist[i]) continue;
       if(location_population[i] > type_capacity[j]) continue;
-      if(type_cost[j] <= best_cost) {
+      if(!ok || type_cost[j] <= best_cost) {
         ok = true;
         best_cost = type_cost[j];
         best_center = j;
@@ -62,6 +64,8 @@ Solver::solution GRASP::get_randomized_solution() {
         }
       }
     }
+    std::cout << "[ RANDOM GENERATION ]: Found " << int(candidate_list.size()) <<
+    " candidates." << std::endl;
     std::sort(candidate_list.begin(), candidate_list.end());
     if(candidate_list.empty()) {
       ret.is_valid = false;
