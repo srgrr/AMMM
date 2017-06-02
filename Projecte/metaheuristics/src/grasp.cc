@@ -95,7 +95,7 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
   /*
     Pairs of cities, swap primary-primary
   */
-  #pragma omp parallel for shared(ret)
+  #pragma omp parallel for shared(ret, sol)
   for(int i=0; i<num_cities; ++i) {
     for(int j=i+1; j<num_cities; ++j) {
       Solver::solution cand = sol;
@@ -110,7 +110,7 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
   /*
     Pairs of cities, swap primary-secondary
   */
-  #pragma omp parallel for shared(ret)
+  #pragma omp parallel for shared(ret, sol)
   for(int i=0; i<num_cities; ++i) {
     for(int j=0; j<num_cities; ++j) {
       if(i == j) continue;
@@ -126,7 +126,7 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
   /*
     Pairs of cities, swap secondary-secondary
   */
-  #pragma omp parallel for shared(ret)
+  #pragma omp parallel for shared(ret, sol)
   for(int i=0; i<num_cities; ++i) {
     for(int j=i+1; j<num_cities; ++j) {
       Solver::solution cand = sol;
@@ -142,7 +142,7 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
     Single city, change its primary and secondary centers
     (or only one of them)
   */
-  #pragma omp parallel for shared(ret)
+  #pragma omp parallel for shared(ret, sol)
   for(int i=0; i<num_cities; ++i) {
     for(int primary=0; primary<num_locations; ++primary) {
       for(int secondary=0; secondary<num_locations; ++secondary) {
