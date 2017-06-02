@@ -1,158 +1,153 @@
 #include "grasp.h"
 
-Solver::solution GRASP::get_randomized_solution() {
-    // current population that a location must serve
-    std::vector< double > location_population(num_locations, 0.0);
-    // maximum distance from a city (primary)
-    std::vector< double > max_primary_dist(num_locations, 0.0);
-    // maximum distance from a city (secondary)
-    std::vector< double > max_secondary_dist(num_locations, 0.0);
-
-    solution ret(num_locations, num_cities);
-    /*
-      For each city, get all the valid pairs (primary, secondary),
-      sort them according to the following function:
-
-      cost = sum of all minimum location prices
-
-      minimum location price = the price of the cheapest location that can be
-      placed and still satisfy the problem constraints
-    */
-    for(int i=0; i<num_cities; ++i) {
-      // cost < < primary_location, secondary_location >, < primary_type, secondary_type > >
-      std::vector< std::pair< double, std::pair< std::pair< int, int >, std::pair< int, int > > > > candidate_list;
-      for(int primary=0; primary<num_locations; ++primary) {
-        for(int secondary=0; secondary<num_locations; ++secondary) {
-          // ... which of course must be different
-          if(primary == secondary) continue;
-          /*
-            For each candidate, compute the cost function of the partial solution
-            that consists of the current solution + the candidate element
-          */
-
-          // this distance comes from the constraint imposed in equation 7
-          if(loc2loc_dist[primary][secondary] < d_center) continue;
-          // if any of these two locations had no center before, then we must
-          // check if there is any location which has a center such that there
-          // is at distance < d_center from any of our two chosen centers
-          int to_check[2] = {primary, secondary};
-          bool can = true;
-          double current_cost = ret.solution_cost;
-          for(int k=0; k<2 && can; ++k) {
-            // is this location already assigned?
-            if(ret.location_center_type[to_check[k]] != -1) {
-              // lets pretend that our chosen centers have no type at the moment
-              current_cost -= type_cost[ret.location_center_type[to_check[k]]];
-              continue;
-            }
-            for(int l=0; l<num_locations && can; ++l) {
-              if(l == to_check[k]) continue;
-              can &= (ret.location_center_type[l] == -1 || loc2loc_dist[l][to_check[k]] >= d_center);
-            }
-          }
-          if(!can) continue;
-          // check if the primary location is suitable
-          double population_primary =
-            location_population[primary] + city_population[i];
-          double cur_max_primary_dist =
-            std::max(max_primary_dist[primary], city2loc_dist[i][primary]);
-          double best_primary = -1.0;
-          int best_primary_type = -1;
-
-          /*
-            We must check if we can place a center such that is satisfies its
-            population demand and that the distances of its "client" cities
-            are inside the radii of the working distance.
-
-            The greedy part comes here: for the primary and the secondary center we will choose
-            the ones that minimize the cost. That is, we will choose the cheapest
-            center that allows us to satisfy the current constraints and demands
-          */
-          double population_secondary =
-            location_population[secondary] + 0.1*double(city_population[i]);
-          double cur_max_secondary_dist =
-            std::max(max_secondary_dist[secondary], city2loc_dist[i][secondary]);
-          double best_secondary = -1.0;
-          int best_secondary_type = -1;
-          for(int t=0; t<num_types; ++t) {
-            if(type_capacity[t] >= population_primary && type_distance[t] >= cur_max_primary_dist) {
-              if(best_primary < 0.0 || type_cost[t] < best_primary) {
-                best_primary = type_cost[t];
-                best_primary_type = t;
-              }
-            }
-            if(type_capacity[t] >= population_secondary && 3.0*type_distance[t] >= cur_max_secondary_dist) {
-              if(best_secondary < 0.0 || type_cost[t] < best_secondary) {
-                best_secondary = type_cost[t];
-                best_secondary_type = t;
-              }
-            }
-          }
-          if(best_primary < 0.0 || best_secondary < 0.0) continue;
-          // did we find two center types suitable to our candidate?
-          if(best_primary >= 0.0 && best_secondary >= 0.0) {
-            current_cost += best_primary + best_secondary;
-            // add this candidate to the list
-            candidate_list.push_back({current_cost, {{primary, secondary}, {best_primary_type, best_secondary_type}}});
-          }
-        // end of big inner loop
-        }
-      }
-      // if this list is empty then we cannot continue to construct the solution,
-      // lets return a solution marked as invalid
-      if(candidate_list.empty()) return ret;
-      // candidate_list is a pair of double and pair of pairs of integers,
-      // so it will be sorted according to the double (which is the cost function)
-      std::sort(candidate_list.begin(), candidate_list.end());
-      int max_val = std::max(1, int(double(candidate_list.size()*alpha)));
-      int chosen = rand()%max_val;
-      double new_cost   = candidate_list[chosen].first;
-      int prim_location = candidate_list[chosen].second.first.first;
-      int secn_location = candidate_list[chosen].second.first.second;
-      int prim_type     = candidate_list[chosen].second.second.first;
-      int secn_type     = candidate_list[chosen].second.second.second;
-      // apply the chosen step to the solution
-      // update the solution structures and the cost
-      ret.city_primary_center[i] = prim_location;
-      ret.city_secondary_center[i] = secn_location;
-      ret.location_center_type[prim_location] = prim_type;
-      ret.location_center_type[secn_location] = secn_type;
-      ret.solution_cost = new_cost;
-      // update the auxiliary data structures that let us check quickly if a
-      // candidate is valid or not
-      location_population[prim_location] += city_population[i];
-      location_population[secn_location] += 0.1 * double(city_population[i]);
-      max_primary_dist[prim_location] = std::max(max_primary_dist[prim_location], city2loc_dist[i][prim_location]);
-      max_secondary_dist[prim_location] = std::max(max_secondary_dist[secn_location], city2loc_dist[i][secn_location]);
+/*
+  Given a solution, computes the cheapest center that can go to a location.
+  The solution can be partial
+*/
+void GRASP::readjust_centers(Solver::solution& sol) {
+  sol.solution_cost = 0;
+  sol.is_valid = true;
+  std::vector< double > location_population(num_locations, 0.0);
+  std::vector< double > max_primary_dist(num_locations, 0.0);
+  std::vector< double > max_secondary_dist(num_locations, 0.0);
+  for(int i=0; i<num_cities; ++i) {
+    // are we in a partial solution?
+    if(sol.city_primary_center[i] == -1) continue;
+    int prim = sol.city_primary_center[i];
+    location_population[prim] += city_population[i];
+    int secn = sol.city_secondary_center[i];
+    location_population[secn] += 0.1 * double(city_population[i]);
+    max_primary_dist[prim] = std::max(max_primary_dist[prim], city2loc_dist[i][prim]);
+    max_secondary_dist[secn] = std::max(max_secondary_dist[secn], city2loc_dist[i][secn]);
+  }
+  for(int i=0; i<num_locations; ++i) {
+    if(std::abs(location_population[i]) < 1e-4) {
+      sol.location_center_type[i] = -1;
+      continue;
     }
-    ret.is_valid = true;
-    return ret;
+    double best_cost = type_cost[0];
+    int best_center = 0;
+    bool ok = false;
+    for(int j=0; j<num_types; ++j) {
+      if(type_distance[j] < max_primary_dist[i]) continue;
+      if(3.0*type_distance[j] < max_secondary_dist[i]) continue;
+      if(location_population[i] > type_capacity[j]) continue;
+      if(type_cost[j] <= best_cost) {
+        ok = true;
+        best_cost = type_cost[j];
+        best_center = j;
+      }
+    }
+    if(!ok) {
+      sol.is_valid = false;
+      return;
+    }
+    sol.location_center_type[i] = best_center;
+    sol.solution_cost += best_cost;
+  }
+  sol.is_valid = is_solution_valid(sol, true, false);
 }
 
-void GRASP::local_search(Solver::solution& current_solution) {
-  /*
-    Given a feasible solution
-  */
+Solver::solution GRASP::get_randomized_solution() {
+  solution ret(num_locations, num_cities);
+  for(int i=0; i<num_cities; ++i) {
+    std::vector< std::pair<double, std::pair<int, int> > > candidate_list;
+    for(int primary=0; primary<num_locations; ++primary) {
+      for(int secondary=0; secondary<num_locations; ++secondary) {
+        ret.city_primary_center[i] = primary;
+        ret.city_secondary_center[i] = secondary;
+        readjust_centers(ret);
+        if(ret.is_valid) {
+          candidate_list.push_back({ret.solution_cost, {primary, secondary}});
+        }
+      }
+    }
+    std::sort(candidate_list.begin(), candidate_list.end());
+    if(candidate_list.empty()) {
+      ret.is_valid = false;
+      return ret;
+    }
+    int max_val = std::max(1, int(double(candidate_list.size()*alpha)));
+    int chosen = rand()%max_val;
+    ret.solution_cost = candidate_list[chosen].first;
+    ret.city_primary_center[i] = candidate_list[chosen].second.first;
+    ret.city_secondary_center[i] = candidate_list[chosen].second.second;
+    readjust_centers(ret);
+  }
+  return ret;
+}
+
+/*
+  Given a solution, computes all its possible neighbors and returns the ones
+  that show some improvement on the solution cost
+
+  Here, two solutions A and B are neighbors if they are identical except for a
+  city that uses a different pair of centers as primary and secondary (note that
+  there is no need to change both centers, a solution can be considered a
+  neighbor if we change only one of them, too).
+*/
+std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol) {
+  std::vector< Solver::solution > ret;
+  for(int i=0; i<num_cities; ++i) {
+    for(int primary=0; primary<num_locations; ++primary) {
+      for(int secondary=0; secondary<num_locations; ++secondary) {
+        Solver::solution cand = sol;
+        cand.city_primary_center[i] = primary;
+        cand.city_secondary_center[i] = secondary;
+        readjust_centers(cand);
+        if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+          ret.push_back(cand);
+        }
+      }
+    }
+  }
+  return ret;
+}
+
+/*
+  Given a feasible solution, performs a beam-search that tries to improve
+  it
+*/
+Solver::solution GRASP::local_search(Solver::solution& current_solution) {
+  std::set< Solver::solution, Solver::solution_comparator > S;
+  S.insert(current_solution);
+  Solver::solution best_solution = current_solution;
+  std::cout << "[ LOCAL SEARCH ]" << std::endl;
+  int it_count = 0;
+  while(!S.empty()) {
+    std::cout << "\tIteration " << ++it_count << std::endl;
+    std::cout << "\tBest solution cost " << best_solution.solution_cost << std::endl;
+    Solver::solution cur = *S.begin();
+    if(cur.solution_cost < best_solution.solution_cost) {
+      best_solution = cur;
+    }
+    S.erase(cur);
+    std::vector< Solver::solution > neighbors = generate_neighbors(cur);
+    std::cout << "\tFound " << int(neighbors.size()) << " neighbors." << std::endl;
+    for(Solver::solution& neighbor : neighbors) {
+      S.insert(neighbor);
+      while(int(S.size()) > beam_size) {
+        S.erase(--S.end());
+      }
+    }
+  }
+  return best_solution;
 }
 
 Solver::solution GRASP::solve() {
-
-
   solution best_solution(num_locations, num_cities);
-
   for(int i=0; i<max_grasp_iterations; ++i) {
     solution sol(num_locations, num_cities);
     for(int j=0; j<max_solution_generation_attempts && !sol.is_valid; ++j) {
       sol = get_randomized_solution();
     }
-    local_search(sol);
     if(sol.is_valid) {
+      sol = local_search(sol);
       if(!best_solution.is_valid || sol.solution_cost < best_solution.solution_cost) {
         best_solution = sol;
       }
     }
+    std::cout << "Iteration " << i << " | Best cost: " << best_solution.solution_cost << std::endl;
   }
-
   return best_solution;
-
 }

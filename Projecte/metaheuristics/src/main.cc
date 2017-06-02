@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
   }
   Solver::solution sol = solver->solve();
   if(sol.is_valid) {
-    solver->is_solution_valid(sol);
+    solver->is_solution_valid(sol, false, true);
   }
   std::cout << std::endl;
   solver->print_solution(sol);

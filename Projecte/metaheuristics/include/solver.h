@@ -2,8 +2,10 @@
 #include <istream>
 #include <iostream>
 #include <sstream>
+#include <queue>
 #include <vector>
 #include <cmath>
+#include <ctime>
 
 class Solver {
 protected:
@@ -41,8 +43,13 @@ public:
         solution_cost = 0.0;
       }
   };
+  struct solution_comparator {
+    bool operator()(const Solver::solution& a, const Solver::solution& b) {
+      return a.solution_cost > b.solution_cost;
+    }
+  };
 
-  bool is_solution_valid(Solver::solution& sol);
+  bool is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose);
 
   virtual Solver::solution solve();
 
