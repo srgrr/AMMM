@@ -92,6 +92,57 @@ Solver::solution GRASP::get_randomized_solution() {
 */
 std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol) {
   std::vector< Solver::solution > ret;
+  /*
+    Pairs of cities, swap primary-primary
+  */
+  #pragma omp parallel for shared(ret)
+  for(int i=0; i<num_cities; ++i) {
+    for(int j=i+1; j<num_cities; ++j) {
+      Solver::solution cand = sol;
+      std::swap(cand.city_primary_center[i], cand.city_primary_center[j]);
+      readjust_centers(cand);
+      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+        #pragma omp critical
+          ret.push_back(cand);
+      }
+    }
+  }
+  /*
+    Pairs of cities, swap primary-secondary
+  */
+  #pragma omp parallel for shared(ret)
+  for(int i=0; i<num_cities; ++i) {
+    for(int j=0; j<num_cities; ++j) {
+      if(i == j) continue;
+      Solver::solution cand = sol;
+      std::swap(cand.city_primary_center[i], cand.city_secondary_center[j]);
+      readjust_centers(cand);
+      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+        #pragma omp critical
+          ret.push_back(cand);
+      }
+    }
+  }
+  /*
+    Pairs of cities, swap secondary-secondary
+  */
+  #pragma omp parallel for shared(ret)
+  for(int i=0; i<num_cities; ++i) {
+    for(int j=i+1; j<num_cities; ++j) {
+      Solver::solution cand = sol;
+      std::swap(cand.city_secondary_center[i], cand.city_secondary_center[j]);
+      readjust_centers(cand);
+      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+        #pragma omp critical
+          ret.push_back(cand);
+      }
+    }
+  }
+  /*
+    Single city, change its primary and secondary centers
+    (or only one of them)
+  */
+  #pragma omp parallel for shared(ret)
   for(int i=0; i<num_cities; ++i) {
     for(int primary=0; primary<num_locations; ++primary) {
       for(int secondary=0; secondary<num_locations; ++secondary) {
@@ -100,11 +151,13 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
         cand.city_secondary_center[i] = secondary;
         readjust_centers(cand);
         if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
-          ret.push_back(cand);
+          #pragma omp critical
+            ret.push_back(cand);
         }
       }
     }
   }
+  #pragma omp barrier
   return ret;
 }
 

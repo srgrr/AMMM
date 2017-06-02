@@ -1,4 +1,5 @@
 #pragma once
+#include <omp.h>
 #include <istream>
 #include <iostream>
 #include <sstream>
@@ -45,7 +46,7 @@ public:
   };
   struct solution_comparator {
     bool operator()(const Solver::solution& a, const Solver::solution& b) {
-      return a.solution_cost > b.solution_cost;
+      return a.solution_cost < b.solution_cost;
     }
   };
 
