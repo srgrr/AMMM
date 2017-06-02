@@ -65,7 +65,7 @@ Solver::solution GRASP::get_randomized_solution() {
       }
     }
     std::cout << "[ RANDOM GENERATION ]: Found " << int(candidate_list.size()) <<
-    " candidates." << std::endl;
+    " candidates for city " << i << "." << std::endl;
     std::sort(candidate_list.begin(), candidate_list.end());
     if(candidate_list.empty()) {
       ret.is_valid = false;
