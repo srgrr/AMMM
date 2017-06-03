@@ -2,6 +2,7 @@
 #include <omp.h>
 #include <istream>
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <queue>
 #include <vector>
@@ -9,25 +10,7 @@
 #include <ctime>
 
 class Solver {
-protected:
-  // problem data
-  int num_cities, num_types, num_locations;
-  std::vector< std::vector< double > > city_coordinates;
-  std::vector< std::vector< double > > location_coordinates;
-  std::vector< int > city_population;
-  double d_center;
-  std::vector< int > type_capacity;
-  std::vector< double > type_distance;
-  std::vector< double > type_cost;
-  std::vector< std::vector< double > > loc2loc_dist;
-  std::vector< std::vector< double > > city2loc_dist;
-
 public:
-  Solver();
-  Solver(std::istream& in);
-
-  void print_data_summary();
-
   // solution container
   // its default constructor builds an invalid solution
   struct solution {
@@ -43,12 +26,35 @@ public:
         is_valid = false;
         solution_cost = 0.0;
       }
+      solution() { }
+      bool operator<(const Solver::solution& other) const {
+        if(!is_valid) return false;
+        if(!other.is_valid) return true;
+        return solution_cost < other.solution_cost;
+      }
   };
-  struct solution_comparator {
-    bool operator()(const Solver::solution& a, const Solver::solution& b) {
-      return a.solution_cost < b.solution_cost;
-    }
-  };
+protected:
+  // problem data
+  int num_cities, num_types, num_locations;
+  std::vector< std::vector< double > > city_coordinates;
+  std::vector< std::vector< double > > location_coordinates;
+  std::vector< int > city_population;
+  double d_center;
+  std::vector< int > type_capacity;
+  std::vector< double > type_distance;
+  std::vector< double > type_cost;
+  std::vector< std::vector< double > > loc2loc_dist;
+  std::vector< std::vector< double > > city2loc_dist;
+
+  void readjust_centers(Solver::solution& sol);
+  Solver::solution get_randomized_solution(bool greedy, double alpha);
+  std::vector< Solver::solution > generate_neighbors(Solver::solution& sol);
+
+public:
+  Solver();
+  Solver(std::istream& in);
+
+  void print_data_summary();
 
   bool is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose);
 

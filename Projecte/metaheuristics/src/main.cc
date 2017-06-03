@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
     std::exit(2);
   }
   Solver::solution sol = solver->solve();
-  if(sol.is_valid) {
-    solver->is_solution_valid(sol, false, true);
+  if(sol.is_valid && solver->is_solution_valid(sol, false, true)) {
+    std::cout << "(Solution is correct)" << std::endl;
   }
   std::cout << std::endl;
   solver->print_solution(sol);
