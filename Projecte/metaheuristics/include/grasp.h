@@ -8,7 +8,7 @@ class GRASP : public Solver {
 private:
   int max_grasp_iterations = 10;
   int max_solution_generation_attempts = 100;
-  int beam_size = 5;
+  int beam_size = 100;
   double alpha = 0.2;
   Solver::solution local_search(solution& sol);
 

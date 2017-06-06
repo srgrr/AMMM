@@ -332,7 +332,7 @@ std::vector< Solver::solution > Solver::generate_neighbors(Solver::solution& sol
       Solver::solution cand = sol;
       std::swap(cand.city_primary_center[i], cand.city_primary_center[j]);
       readjust_centers(cand);
-      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+      if(cand < sol) {
         #pragma omp critical
           ret.push_back(cand);
       }
@@ -348,7 +348,7 @@ std::vector< Solver::solution > Solver::generate_neighbors(Solver::solution& sol
       Solver::solution cand = sol;
       std::swap(cand.city_primary_center[i], cand.city_secondary_center[j]);
       readjust_centers(cand);
-      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+      if(cand < sol) {
         #pragma omp critical
           ret.push_back(cand);
       }
@@ -363,7 +363,7 @@ std::vector< Solver::solution > Solver::generate_neighbors(Solver::solution& sol
       Solver::solution cand = sol;
       std::swap(cand.city_secondary_center[i], cand.city_secondary_center[j]);
       readjust_centers(cand);
-      if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+      if(cand < sol) {
         #pragma omp critical
           ret.push_back(cand);
       }
@@ -381,7 +381,7 @@ std::vector< Solver::solution > Solver::generate_neighbors(Solver::solution& sol
         cand.city_primary_center[i] = primary;
         cand.city_secondary_center[i] = secondary;
         readjust_centers(cand);
-        if(cand.is_valid && cand.solution_cost < sol.solution_cost) {
+        if(cand < sol) {
           #pragma omp critical
             ret.push_back(cand);
         }

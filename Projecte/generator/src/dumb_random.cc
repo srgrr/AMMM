@@ -45,8 +45,7 @@ int main(int argc, char** argv) {
   cout << "];" << endl;
   cout << "typeCost = [";
   for(int i=0; i<num_types; ++i) {
-    cout << rand()%10 + 1 << " ";
+    cout << rand()%100 + 1 << " ";
   }
   cout << "];" << endl;
 }
-

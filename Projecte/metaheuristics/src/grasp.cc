@@ -14,6 +14,8 @@ Solver::solution GRASP::local_search(Solver::solution& current_solution) {
   while(!S.empty()) {
     std::cout << "\tIteration " << ++it_count << std::endl;
     std::cout << "\tBest solution cost " << best_solution.solution_cost << std::endl;
+    std::cout << "\tSolution bag size is " << S.size() << std::endl;
+    std::cout << "Operating at interval [" << (*S.begin()).solution_cost << ", " << (*--S.end()).solution_cost << "]" << std::endl;
     Solver::solution cur = *S.begin();
     if(cur.solution_cost < best_solution.solution_cost) {
       best_solution = cur;
@@ -35,9 +37,7 @@ Solver::solution GRASP::solve() {
   solution best_solution(num_locations, num_cities);
   for(int i=0; i<max_grasp_iterations; ++i) {
     solution sol(num_locations, num_cities);
-    for(int j=0; j<max_solution_generation_attempts && !sol.is_valid; ++j) {
-      sol = get_randomized_solution(true, this->alpha);
-    }
+    sol = get_randomized_solution(true, this->alpha);
     if(sol.is_valid) {
       sol = local_search(sol);
       if(sol < best_solution) {
