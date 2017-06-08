@@ -3,7 +3,7 @@
 
 class BRKGA : public Solver {
 private:
-  int num_individuals = 40;
+  int num_individuals = 20;
   int num_generations = 100;
   double elite_p = 0.2;
   double elite_inheritance_prob = 0.7;

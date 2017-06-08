@@ -23,7 +23,7 @@ std::vector< double > BRKGA::crossover(std::vector< double >& elite, std::vector
 }
 
 Solver::solution BRKGA::decode_individual(std::vector< double >& individual) {
-  Solver::solution ret(num_locations, num_cities);
+  Solver::solution ret(num_locations, num_cities, this);
   std::vector< std::pair< double, int > > sorted_cities(num_cities);
   for(int i=0; i<num_cities; ++i) {
     sorted_cities[i] = {double(city_population[i])*individual[i], i};
@@ -36,6 +36,7 @@ Solver::solution BRKGA::decode_individual(std::vector< double >& individual) {
     double best_cost = -1.0;
     for(int primary = 0; primary<num_locations; ++primary) {
       for(int secondary = 0; secondary<num_locations; ++secondary) {
+        if(primary == secondary) continue;
         ret.city_primary_center[current_city] = primary;
         ret.city_secondary_center[current_city] = secondary;
         readjust_centers(ret);

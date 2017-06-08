@@ -18,14 +18,17 @@ public:
       std::vector< int > location_center_type;
       std::vector< int > city_primary_center;
       std::vector< int > city_secondary_center;
+      Solver* problem;
       bool is_valid;
       double solution_cost;
-      solution(int num_locs, int num_cities) {
+      double occupation_ratio() const;
+      solution(int num_locs, int num_cities, Solver* prob) {
         location_center_type = std::vector< int >(num_locs, -1);
         city_primary_center = std::vector< int >(num_cities, -1);
         city_secondary_center = std::vector< int >(num_cities, -1);
         is_valid = false;
         solution_cost = 0.0;
+        problem = prob;
       }
       solution() {
         is_valid = false;
@@ -33,7 +36,10 @@ public:
       bool operator<(const Solver::solution& other) const {
         if(!is_valid) return false;
         if(!other.is_valid) return true;
-        return solution_cost < other.solution_cost;
+        if(std::abs(solution_cost - other.solution_cost) > 1e-4) {
+          return solution_cost < other.solution_cost;
+        }
+        return occupation_ratio() > other.occupation_ratio();
       }
   };
 protected:
@@ -68,4 +74,6 @@ public:
   bool is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose);
   virtual Solver::solution solve();
   void print_solution(const Solver::solution& sol);
+  const std::vector< int >& get_type_capacity();
+  const std::vector< int >& get_city_population();
 };

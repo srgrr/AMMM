@@ -27,7 +27,7 @@ void GRASP::local_search(Solver::solution& current_solution) {
 
 Solver::solution GRASP::solve() {
   for(int i=0; i<max_grasp_iterations; ++i) {
-    solution sol(num_locations, num_cities);
+    solution sol(num_locations, num_cities, this);
     sol = get_randomized_solution(alpha);
     if(sol.is_valid) {
       local_search(sol);
@@ -37,7 +37,7 @@ Solver::solution GRASP::solve() {
 }
 
 Solver::solution GRASP::get_randomized_solution(double alpha) {
-  Solver::solution ret(num_locations, num_cities);
+  Solver::solution ret(num_locations, num_cities, this);
   std::vector< int > city_order(num_cities);
   for(int i=0; i<num_cities; ++i) {
     city_order[i] = i;
@@ -48,6 +48,7 @@ Solver::solution GRASP::get_randomized_solution(double alpha) {
     std::vector< std::pair<double, std::pair<int, int> > > candidate_list;
     for(int primary=0; primary<num_locations; ++primary) {
       for(int secondary=0; secondary<num_locations; ++secondary) {
+        if(primary == secondary) continue;
         ret.city_primary_center[current_city] = primary;
         ret.city_secondary_center[current_city] = secondary;
         readjust_centers(ret);
@@ -136,6 +137,8 @@ std::vector< Solver::solution > GRASP::generate_neighbors(Solver::solution& sol)
   for(int i=0; i<num_cities; ++i) {
     for(int primary=0; primary<num_locations; ++primary) {
       for(int secondary=0; secondary<num_locations; ++secondary) {
+        if(primary == secondary ||
+          (sol.city_primary_center[i] == primary && sol.city_secondary_center[i] == secondary)) continue;
         Solver::solution cand = sol;
         cand.city_primary_center[i] = primary;
         cand.city_secondary_center[i] = secondary;

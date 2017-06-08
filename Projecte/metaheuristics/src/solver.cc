@@ -72,7 +72,7 @@ Solver::Solver(std::istream& in) {
               location_coordinates[j][0], location_coordinates[j][1]);
     }
   }
-  best_solution = Solver::solution(num_locations, num_cities);
+  best_solution = Solver::solution(num_locations, num_cities, this);
 }
 
 bool Solver::is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose = false) {
@@ -232,6 +232,7 @@ void Solver::print_data_summary() {
 }
 
 
+
 /*
   Given a solution, computes the cheapest center that can go to a location.
   The solution can be partial
@@ -257,6 +258,16 @@ void Solver::readjust_centers(Solver::solution& sol) {
       sol.location_center_type[i] = -1;
       continue;
     }
+    // did we add a center? lets check that it is not placed too near to another center
+    if(sol.location_center_type[i] == -1) {
+      for(int j=0; j<num_locations; ++j) {
+        if(i == j) continue;
+        if(std::abs(location_population[j]) > 1e-4 && loc2loc_dist[i][j] < d_center) {
+          sol.is_valid = false;
+          return;
+        }
+      }
+    }
     double best_cost = type_cost[0];
     int best_center = 0;
     bool ok = false;
@@ -279,5 +290,33 @@ void Solver::readjust_centers(Solver::solution& sol) {
     sol.location_center_type[i] = best_center;
     sol.solution_cost += best_cost;
   }
-  sol.is_valid = is_solution_valid(sol, true, false);
+  sol.is_valid = true;
+}
+
+const std::vector< int >& Solver::get_type_capacity() {
+  return type_capacity;
+}
+
+const std::vector< int >& Solver::get_city_population() {
+  return city_population;
+}
+
+double Solver::solution::occupation_ratio() const {
+  double ret = 0.0;
+  std::vector< double > location_population(location_center_type.size(), 0.0);
+  const std::vector< int >& _type_capacity = problem->get_type_capacity();
+  const std::vector< int >& _city_population = problem->get_city_population();
+  for(int i=0; i<int(city_primary_center.size()); ++i) {
+    if(city_primary_center[i] != -1) {
+      location_population[city_primary_center[i]] += double(_city_population[i]);
+    }
+    if(city_secondary_center[i] != -1) {
+      location_population[city_secondary_center[i]] += 0.1*double(_city_population[i]);
+    }
+  }
+  for(int i=0; i<int(location_center_type.size()); ++i) {
+    if(location_center_type[i] == -1) continue;
+    ret += double(location_population[i]) / double(_type_capacity[location_center_type[i]]);
+  }
+  return ret;
 }
