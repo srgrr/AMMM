@@ -8,7 +8,7 @@
 		<config category="opl" default="false" name="sample">
 			<ref name="ilp_model.mod" type="model">
 			</ref>
-			<ref name="random2.dat" type="data">
+			<ref name="random3.dat" type="data">
 			</ref>
 		</config>
 		<config category="opl" default="false" name="main">

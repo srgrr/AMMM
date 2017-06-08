@@ -111,6 +111,6 @@
 	}
 	
 	
-	executeModel("random_15_7_4_1.dat");
+	executeModel("hull.dat");
 	
 };

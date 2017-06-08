@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
   cout << "d_center = " << random_float()/4.0 << ";" << endl;
   cout << "typeCapacity = [";
   for(int i=0; i<num_types; ++i) {
-    cout << rand()%100 << " ";
+    cout << rand()%10000 << " ";
   }
   cout << "];" << endl;
   cout << "typeDistance = [";

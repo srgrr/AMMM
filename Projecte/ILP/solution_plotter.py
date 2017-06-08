@@ -1,31 +1,31 @@
 import matplotlib.pyplot as plt
 
-numCities = int(raw_input())
+numCities = int(input())
 cityCoordinates = []
 for _ in range(numCities):
-    cityCoordinates.append(map(float, raw_input().split(" ")))
+    cityCoordinates.append(list(map(float, input().split(" "))))
 
-numLocations = int(raw_input())
+numLocations = int(input())
 locationCoordinates = []
 for _ in range(numLocations):
-    locationCoordinates.append(map(float, raw_input().split(" ")))
+    locationCoordinates.append(list(map(float, input().split(" "))))
 
-numTypes = int(raw_input())
+numTypes = int(input())
 typeDistance = []
 for _ in range(numTypes):
-    typeDistance.append(float(raw_input()))
+    typeDistance.append(float(input()))
 
 typeInLocation = []
 for _ in range(numLocations):
-    typeInLocation.append(int(raw_input())-1)
+    typeInLocation.append(int(input())-1)
 
 primaryCenters = []
 for _ in range(numCities):
-    primaryCenters.append(int(raw_input())-1)
+    primaryCenters.append(int(input())-1)
 
 secondaryCenters = []
 for _ in range(numCities):
-    secondaryCenters.append(int(raw_input())-1)
+    secondaryCenters.append(int(input())-1)
 
 for i in range(numCities):
     primary_loc = primaryCenters[i]
@@ -55,4 +55,4 @@ plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.0])
 
 plt.plot()
-plt.show()
+plt.savefig('sol.png')
