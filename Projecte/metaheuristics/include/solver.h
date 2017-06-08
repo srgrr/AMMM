@@ -50,8 +50,6 @@ protected:
   std::vector< std::vector< double > > city2loc_dist;
 
   void readjust_centers(Solver::solution& sol);
-  Solver::solution get_randomized_solution(bool greedy, double alpha);
-  std::vector< Solver::solution > generate_neighbors(Solver::solution& sol);
 
 public:
   Solver();

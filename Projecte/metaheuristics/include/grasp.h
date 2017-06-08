@@ -11,6 +11,8 @@ private:
   int beam_size = 100;
   double alpha = 0.2;
   Solver::solution local_search(solution& sol);
+  Solver::solution get_randomized_solution(bool greedy, double alpha);
+  std::vector< Solver::solution > generate_neighbors(Solver::solution& sol);
 
 public:
   GRASP(std::istream& in) : Solver(in) {}
