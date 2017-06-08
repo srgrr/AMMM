@@ -8,6 +8,7 @@
 #include <vector>
 #include <cmath>
 #include <ctime>
+#include <cassert>
 
 class Solver {
 public:
@@ -26,7 +27,9 @@ public:
         is_valid = false;
         solution_cost = 0.0;
       }
-      solution() { }
+      solution() {
+        is_valid = false;
+      }
       bool operator<(const Solver::solution& other) const {
         if(!is_valid) return false;
         if(!other.is_valid) return true;

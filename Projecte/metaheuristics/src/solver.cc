@@ -89,9 +89,11 @@ bool Solver::is_solution_valid(Solver::solution& sol, bool accept_partial, bool 
     for(int i=0; i<num_cities; ++i) {
       if(sol.city_primary_center[i] == -1) {
         if(verbose) std::cout << "[ERROR]: City " << i << " has no primary center." << std::endl;
+        return false;
       }
       if(sol.city_secondary_center[i] == -1) {
         if(verbose) std::cout << "[ERROR]. City " << i << " has no secondary center." << std::endl;
+        return false;
       }
     }
   }
