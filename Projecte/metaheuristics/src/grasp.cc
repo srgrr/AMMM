@@ -37,7 +37,7 @@ Solver::solution GRASP::solve() {
   solution best_solution(num_locations, num_cities);
   for(int i=0; i<max_grasp_iterations; ++i) {
     solution sol(num_locations, num_cities);
-    sol = get_randomized_solution(true, this->alpha);
+    sol = get_randomized_solution(alpha);
     if(sol.is_valid) {
       sol = local_search(sol);
       if(sol < best_solution) {
@@ -49,77 +49,27 @@ Solver::solution GRASP::solve() {
   return best_solution;
 }
 
-
-/*
-  Given a solution, computes the cheapest center that can go to a location.
-  The solution can be partial
-*/
-void Solver::readjust_centers(Solver::solution& sol) {
-  sol.solution_cost = 0;
-  sol.is_valid = true;
-  std::vector< double > location_population(num_locations, 0.0);
-  std::vector< double > max_primary_dist(num_locations, 0.0);
-  std::vector< double > max_secondary_dist(num_locations, 0.0);
-  for(int i=0; i<num_cities; ++i) {
-    // are we in a partial solution?
-    if(sol.city_primary_center[i] == -1) continue;
-    int prim = sol.city_primary_center[i];
-    location_population[prim] += city_population[i];
-    int secn = sol.city_secondary_center[i];
-    location_population[secn] += 0.1 * double(city_population[i]);
-    max_primary_dist[prim] = std::max(max_primary_dist[prim], city2loc_dist[i][prim]);
-    max_secondary_dist[secn] = std::max(max_secondary_dist[secn], city2loc_dist[i][secn]);
-  }
-  for(int i=0; i<num_locations; ++i) {
-    if(std::abs(location_population[i]) < 1e-4) {
-      sol.location_center_type[i] = -1;
-      continue;
-    }
-    double best_cost = type_cost[0];
-    int best_center = 0;
-    bool ok = false;
-    for(int j=0; j<num_types; ++j) {
-      // check that the proposed type fulfills all the distance and population
-      // constraints
-      if(type_distance[j] < max_primary_dist[i]) continue;
-      if(3.0*type_distance[j] < max_secondary_dist[i]) continue;
-      if(location_population[i] > type_capacity[j]) continue;
-      if(!ok || type_cost[j] <= best_cost) {
-        ok = true;
-        best_cost = type_cost[j];
-        best_center = j;
-      }
-    }
-    if(!ok) {
-      sol.is_valid = false;
-      return;
-    }
-    sol.location_center_type[i] = best_center;
-    sol.solution_cost += best_cost;
-  }
-  sol.is_valid = is_solution_valid(sol, true, false);
-}
-
-Solver::solution GRASP::get_randomized_solution(bool greedy, double alpha) {
-  if(!greedy) alpha = 1.0;
+Solver::solution GRASP::get_randomized_solution(double alpha) {
   Solver::solution ret(num_locations, num_cities);
+  std::vector< int > city_order(num_cities);
   for(int i=0; i<num_cities; ++i) {
+    city_order[i] = i;
+  }
+  std::random_shuffle(city_order.begin(), city_order.end());
+  for(int i=0; i<num_cities; ++i) {
+    int current_city = city_order[i];
     std::vector< std::pair<double, std::pair<int, int> > > candidate_list;
     for(int primary=0; primary<num_locations; ++primary) {
       for(int secondary=0; secondary<num_locations; ++secondary) {
-        ret.city_primary_center[i] = primary;
-        ret.city_secondary_center[i] = secondary;
+        ret.city_primary_center[current_city] = primary;
+        ret.city_secondary_center[current_city] = secondary;
         readjust_centers(ret);
         if(ret.is_valid) {
           candidate_list.push_back({ret.solution_cost, {primary, secondary}});
         }
       }
     }
-    std::cout << "[ RANDOM GENERATION ]: Found " << int(candidate_list.size()) <<
-    " candidates for city " << i << "." << std::endl;
-    if(greedy) {
-      std::sort(candidate_list.begin(), candidate_list.end());
-    }
+    std::sort(candidate_list.begin(), candidate_list.end());
     if(candidate_list.empty()) {
       ret.is_valid = false;
       return ret;
@@ -127,8 +77,8 @@ Solver::solution GRASP::get_randomized_solution(bool greedy, double alpha) {
     int max_val = std::max(1, int(double(candidate_list.size()*alpha)));
     int chosen = rand()%max_val;
     ret.solution_cost = candidate_list[chosen].first;
-    ret.city_primary_center[i] = candidate_list[chosen].second.first;
-    ret.city_secondary_center[i] = candidate_list[chosen].second.second;
+    ret.city_primary_center[current_city] = candidate_list[chosen].second.first;
+    ret.city_secondary_center[current_city] = candidate_list[chosen].second.second;
     readjust_centers(ret);
   }
   return ret;

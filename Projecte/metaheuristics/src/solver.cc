@@ -229,3 +229,54 @@ void Solver::print_data_summary() {
     std::cout << "\t" << elem << std::endl;
   }
 }
+
+
+/*
+  Given a solution, computes the cheapest center that can go to a location.
+  The solution can be partial
+*/
+void Solver::readjust_centers(Solver::solution& sol) {
+  sol.solution_cost = 0;
+  sol.is_valid = true;
+  std::vector< double > location_population(num_locations, 0.0);
+  std::vector< double > max_primary_dist(num_locations, 0.0);
+  std::vector< double > max_secondary_dist(num_locations, 0.0);
+  for(int i=0; i<num_cities; ++i) {
+    // are we in a partial solution?
+    if(sol.city_primary_center[i] == -1) continue;
+    int prim = sol.city_primary_center[i];
+    location_population[prim] += city_population[i];
+    int secn = sol.city_secondary_center[i];
+    location_population[secn] += 0.1 * double(city_population[i]);
+    max_primary_dist[prim] = std::max(max_primary_dist[prim], city2loc_dist[i][prim]);
+    max_secondary_dist[secn] = std::max(max_secondary_dist[secn], city2loc_dist[i][secn]);
+  }
+  for(int i=0; i<num_locations; ++i) {
+    if(std::abs(location_population[i]) < 1e-4) {
+      sol.location_center_type[i] = -1;
+      continue;
+    }
+    double best_cost = type_cost[0];
+    int best_center = 0;
+    bool ok = false;
+    for(int j=0; j<num_types; ++j) {
+      // check that the proposed type fulfills all the distance and population
+      // constraints
+      if(type_distance[j] < max_primary_dist[i]) continue;
+      if(3.0*type_distance[j] < max_secondary_dist[i]) continue;
+      if(location_population[i] > type_capacity[j]) continue;
+      if(!ok || type_cost[j] <= best_cost) {
+        ok = true;
+        best_cost = type_cost[j];
+        best_center = j;
+      }
+    }
+    if(!ok) {
+      sol.is_valid = false;
+      return;
+    }
+    sol.location_center_type[i] = best_center;
+    sol.solution_cost += best_cost;
+  }
+  sol.is_valid = is_solution_valid(sol, true, false);
+}
