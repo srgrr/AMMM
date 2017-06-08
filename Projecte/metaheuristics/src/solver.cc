@@ -9,6 +9,7 @@ static double _dist(double x1, double y1, double x2, double y2) {
 }
 
 Solver::Solver(std::istream& in) {
+  std::time(&_start_time);
   in >> num_cities >> num_types >> num_locations;
   city_coordinates =
     std::vector< std::vector< double > >(num_cities, std::vector< double >(2, 0.0));
@@ -71,7 +72,7 @@ Solver::Solver(std::istream& in) {
               location_coordinates[j][0], location_coordinates[j][1]);
     }
   }
-
+  best_solution = Solver::solution(num_locations, num_cities);
 }
 
 bool Solver::is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose = false) {

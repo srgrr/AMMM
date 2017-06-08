@@ -67,21 +67,18 @@ Solver::solution BRKGA::decode_individual(std::vector< double >& individual) {
   we got by sorting them according to the previous formula.
 */
 Solver::solution BRKGA::solve() {
-  std::vector< std::vector< double > > individuals(num_individuals);
-  std::vector< std::vector< double > > new_individuals(num_individuals);
-  std::vector< std::vector< double > >& current = individuals;
-  std::vector< std::vector< double > >& next_v = new_individuals;
-  solution ret(num_locations, num_cities);
+  int init_seed = std::time(NULL);
+  std::vector< std::pair< Solver::solution, std::vector< double > > > individuals(num_individuals);
+  std::vector< std::pair< Solver::solution, std::vector< double > > > new_individuals(num_individuals);
+  std::vector< std::pair< Solver::solution, std::vector< double > > >& current = individuals;
+  std::vector< std::pair< Solver::solution, std::vector< double > > >& next_v = new_individuals;
   // generate the initial population
-  std::cout << "[INFO]: Generating initial population..." << std::endl;
   #pragma omp parallel for shared(individuals)
   for(int i=0; i<num_individuals; ++i) {
-    individuals[i] = generate_individual();
-    for(int j=0; j<num_retries && !decode_individual(individuals[i]).is_valid; ++j) {
-      individuals[i] = generate_individual();
-    }
+    individuals[i].second = generate_individual();
+    individuals[i].first  = decode_individual(individuals[i].second);
   }
-
+  #pragma omp barrier
   int num_elite = int(double(num_individuals) * elite_p);
   assert(num_elite > 0);
   int num_crossover = int(double(num_individuals) * (1.0 - (elite_p + mutant_p)));
@@ -89,47 +86,43 @@ Solver::solution BRKGA::solve() {
   assert(num_crossover + num_mutants > 0);
 
   for(int gen=0; gen<num_generations; ++gen) {
-    std::cout << "[INFO]: Starting generation " << gen << "..." << std::endl;
-    // decode the solutions
-    std::vector< std::pair< Solver::solution, std::vector< double > > > solutions(num_individuals);
-    std::cout << "\tDecoding solutions..." << std::endl;
-    #pragma omp parallel for shared(solutions)
-    for(int i=0; i<num_individuals; ++i) {
-      solutions[i] = {decode_individual(current[i]), current[i]};
-    }
-    // sort them according to their fitness
-    std::cout << "\tSorting..." << std::endl;
-    std::sort(solutions.begin(), solutions.end());
+    // sort chromosomes according to their fitness
+    std::sort(current.begin(), current.end());
     // update best found solution
-    std::cout << "\tUpdated best found solution..." << std::endl;
-    std::cout << "\t";
     for(int i=0; i<num_individuals; ++i) {
-      std::cout << solutions[i].first.solution_cost << " ";
-      if(solutions[i].first < ret) {
-        ret = solutions[i].first;
+      if(current[i].first < best_solution) {
+        best_solution = current[i].first;
+        std::cout << "MILESTONE | COST " << best_solution.solution_cost <<  " TIME " << _ellapsed_time() << std::endl;
       }
-      current[i] = solutions[i].second;
     }
-    std::cout << std::endl;
-    std::cout << "\tBest solution cost so far: " << ret.solution_cost << std::endl;
     // copy intact the elite
-    std::cout << "\tCopying the elite..." << std::endl;
     for(int i=0; i<num_elite; ++i) {
       next_v[i] = current[i];
     }
     // create crossover individuals
-    std::cout << "\tCrossing over..." << std::endl;
+    #pragma omp parallel for shared(next_v)
     for(int i=0; i<num_crossover; ++i) {
+      std::srand(init_seed + i);
       int elite_member = std::rand() % num_elite;
       int non_elite_member = std::rand() % (num_individuals - num_elite) + num_elite;
-      next_v[i + num_elite] = crossover(individuals[elite_member], individuals[non_elite_member]);
+      next_v[i + num_elite].second = crossover(current[elite_member].second, current[non_elite_member].second);
+      next_v[i + num_elite].first  = decode_individual(next_v[i + num_elite].second);
     }
     // create mutant individuals
-    std::cout << "\tCreating random mutants" << std::endl;
+    #pragma omp parallel for shared(next_v)
     for(int i=0; i<num_mutants; ++i) {
-      next_v[i + num_elite + num_crossover] = generate_individual();
+      next_v[i + num_elite + num_crossover].second = generate_individual();
+      next_v[i + num_elite + num_crossover].first  = decode_individual(next_v[i + num_elite + num_crossover].second);
+    }
+    #pragma omp barrier
+    // try to replace invalid solutions
+    for(auto& kv : current) {
+      if(!kv.first.is_valid) {
+        kv.second = generate_individual();
+        kv.first  = decode_individual(kv.second);
+      }
     }
     std::swap(current, next_v);
   }
-  return ret;
+  return best_solution;
 }

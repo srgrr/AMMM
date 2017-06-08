@@ -51,17 +51,21 @@ protected:
 
   void readjust_centers(Solver::solution& sol);
 
+  Solver::solution best_solution;
+
+  std::time_t _start_time;
+
+  double _ellapsed_time() {
+    std::time_t cur;
+    std::time(&cur);
+    return cur - _start_time;
+  }
+
 public:
   Solver();
   Solver(std::istream& in);
-
   void print_data_summary();
-
   bool is_solution_valid(Solver::solution& sol, bool accept_partial, bool verbose);
-
   virtual Solver::solution solve();
-
   void print_solution(const Solver::solution& sol);
-
-
 };
