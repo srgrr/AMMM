@@ -25,9 +25,8 @@ def get_cpp_input(data):
 def main():
     parser = argparse.ArgumentParser(description="Runs a Metaheuristic algorithm on a given .dat file")
     parser.add_argument("file_name", help="Path to the .dat file")
-    parser.add_argument("-algorithm", default="GRASP", help="Algorithm name (GRASP|BRKGA|BRUTEFORCE)")
+    parser.add_argument("--algorithm", default="GRASP", help="Algorithm name (GRASP|BRKGA|BRUTEFORCE)")
     parser.add_argument("--time_limit", default=60, type=int, help="Time limit (in seconds)")
-    parser.add_argument("--grasp_alpha", default=0.25, type=float, help="Alpha parameter for GRASP")
 
     args = parser.parse_args()
 
