@@ -87,8 +87,46 @@
 		src.end();
 	}
 	
+	function sum(v) {
+		var ret = 0;
+		for(var i = 1; i <= v.size; ++i) ret += v[i];
+		return ret;	
+	}
+	
 	function isSolutionValid(solution) {
-		
+		// EQUATION 2
+		for(var i = 1; i <= solution.numLocations; ++i) {
+			if(sum(solution.X[i]) > 1) return false;
+		}
+		// EQUATIONS 3 and 4
+		for(var i = 1; i <= solution.numCities; ++i) {
+			if(sum(solution.P[i]) != 1) return false;			
+			if(sum(solution.S[i] != 1)) return false;			
+		}
+		// EQUATION 5
+		for(var c = 1; c <= solution.numCities; ++c) {
+			for(var l = 1; l <= solution.numLocations; ++l) {
+				if(solution.P[c][l] + solution.S[c][l] > 1) return false;			
+			}		
+		}
+		// EQUATION 6
+		for(var c = 1; c <= solution.numCities; ++c) {
+			for(var l = 1; l <= solution.numLocations; ++l) {						
+				var s = sum(solution.X[l]);
+				if(s < solution.P[c][l] + solution.S[c][l]) return false;
+			}
+ 		}
+ 		// EQUATION 7
+ 		for(var a = 1; a <= solution.numLocations; ++a) {
+ 			for(var b = a+1; b <= solution.numLocations; ++b) {
+ 			  if(solution.dll[a][b] == 0) {
+ 			  	var sa = sum(solution.X[a]);
+ 			  	var sb = sum(solution.X[b]);
+ 			  	if(sa + sb > 1) return false;  
+ 			  } 			
+ 			} 		
+ 		}
+		return true;
 	}
 	
 	function executeModel(data_path) {
@@ -104,6 +142,10 @@
 		if(validModel && cplex.solve()) {
 			printPlottable(model);
 			solution = cplex.getObjValue();
+			writeln("OBJ VALUE = " + solution);
+			if(!isSolutionValid(model)) {
+				writeln("Solution is not valid!!!");			
+			}
 		}
 		else {
 			writeln("No solution found");	
@@ -111,6 +153,6 @@
 	}
 	
 	
-	executeModel("hull.dat");
+	executeModel("data/test_1.dat");
 	
 };
