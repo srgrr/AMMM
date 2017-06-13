@@ -1,0 +1,10 @@
+MILESTONE | COST 8 TIME 1
+MILESTONE | COST 8 TIME 3
+MILESTONE | COST 8 TIME 4
+MILESTONE | COST 8 TIME 5
+(Solution is correct)
+
+Solution cost: 8
+Location center type: -1 1 -1 0 0 -1 -1 -1 -1 0 -1 -1 -1 -1 -1 -1 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+City primary center: 1 51 3 16 36 1 4 9 36 16
+City secondary center: 4 3 16 51 1 36 1 1 1 3
